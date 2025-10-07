@@ -17,28 +17,28 @@ const GamesGrid = ({ onGameSelect }: GamesGridProps) => {
       title: "Roulette",
       category: "Tischspiele",
       image: "https://images.unsplash.com/photo-1518491945-d3c96a3e7e37?w=400&h=300&fit=crop",
-      isLocked: true,
+      isLocked: false,
       id: "roulette"
     },
     {
       title: "Blackjack",
       category: "Kartenspiele",
       image: "https://images.unsplash.com/photo-1561043433-aaf687c4cf04?w=400&h=300&fit=crop",
-      isLocked: true,
+      isLocked: false,
       id: "blackjack"
     },
     {
-      title: "Poker",
+      title: "Video Poker",
       category: "Kartenspiele",
       image: "https://images.unsplash.com/photo-1560421683-6856ea585c78?w=400&h=300&fit=crop",
-      isLocked: true,
+      isLocked: false,
       id: "poker"
     },
     {
       title: "Bingo",
       category: "Sonstiges",
       image: "https://images.unsplash.com/photo-1558008258-3256797b43f3?w=400&h=300&fit=crop",
-      isLocked: true,
+      isLocked: false,
       id: "bingo"
     },
     {

@@ -3,6 +3,10 @@ import CasinoHeader from "@/components/CasinoHeader";
 import HeroSection from "@/components/HeroSection";
 import GamesGrid from "@/components/GamesGrid";
 import SlotMachine from "@/components/SlotMachine";
+import Roulette from "@/components/Roulette";
+import Blackjack from "@/components/Blackjack";
+import VideoPoker from "@/components/VideoPoker";
+import Bingo from "@/components/Bingo";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -39,7 +43,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background via-card to-background">
       <CasinoHeader balance={balance} />
 
-      {selectedGame === "slots" ? (
+      {selectedGame ? (
         <div className="container mx-auto px-4 py-12">
           <Button 
             variant="outline" 
@@ -49,7 +53,11 @@ const Index = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zurück zur Lobby
           </Button>
-          <SlotMachine balance={balance} onBalanceChange={setBalance} />
+          {selectedGame === "slots" && <SlotMachine balance={balance} onBalanceChange={setBalance} />}
+          {selectedGame === "roulette" && <Roulette balance={balance} onBalanceChange={setBalance} />}
+          {selectedGame === "blackjack" && <Blackjack balance={balance} onBalanceChange={setBalance} />}
+          {selectedGame === "poker" && <VideoPoker balance={balance} onBalanceChange={setBalance} />}
+          {selectedGame === "bingo" && <Bingo balance={balance} onBalanceChange={setBalance} />}
         </div>
       ) : (
         <>

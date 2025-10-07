@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Coins, RotateCw, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import BetSelector from "./BetSelector";
 
 interface SlotMachineProps {
   balance: number;
@@ -10,21 +11,21 @@ interface SlotMachineProps {
 }
 
 const symbols = ["🍒", "🍋", "🍊", "🍇", "💎", "⭐", "7️⃣"];
-const BET_AMOUNT = 10;
 
 const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
+  const [selectedBet, setSelectedBet] = useState(10);
   const [reels, setReels] = useState(["🍒", "🍋", "🍊"]);
   const [spinning, setSpinning] = useState(false);
   const [lastWin, setLastWin] = useState(0);
 
   const spin = () => {
-    if (balance < BET_AMOUNT) {
+    if (balance < selectedBet) {
       toast.error("Nicht genug Guthaben!");
       return;
     }
 
     setSpinning(true);
-    onBalanceChange(balance - BET_AMOUNT);
+    onBalanceChange(balance - selectedBet);
     setLastWin(0);
 
     // Spinning animation
@@ -58,19 +59,19 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
     // Three of a kind
     if (finalReels[0] === finalReels[1] && finalReels[1] === finalReels[2]) {
       if (finalReels[0] === "7️⃣") {
-        winAmount = BET_AMOUNT * 50; // Jackpot
+        winAmount = selectedBet * 50; // Jackpot
         toast.success("🎉 JACKPOT! 7-7-7!");
       } else if (finalReels[0] === "💎") {
-        winAmount = BET_AMOUNT * 20;
+        winAmount = selectedBet * 20;
         toast.success("💎 Diamant-Gewinn!");
       } else {
-        winAmount = BET_AMOUNT * 10;
+        winAmount = selectedBet * 10;
         toast.success("🎊 Dreifach-Gewinn!");
       }
     }
     // Two of a kind
     else if (finalReels[0] === finalReels[1] || finalReels[1] === finalReels[2] || finalReels[0] === finalReels[2]) {
-      winAmount = BET_AMOUNT * 2;
+      winAmount = selectedBet * 2;
       toast.success("✨ Kleiner Gewinn!");
     }
     // No win
@@ -80,7 +81,7 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
 
     if (winAmount > 0) {
       setLastWin(winAmount);
-      onBalanceChange(balance - BET_AMOUNT + winAmount);
+      onBalanceChange(balance - selectedBet + winAmount);
     }
   };
 
@@ -106,33 +107,35 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
           </div>
         </div>
 
+        {/* Bet Selector */}
+        <BetSelector
+          balance={balance}
+          selectedBet={selectedBet}
+          onBetChange={setSelectedBet}
+        />
+
         {/* Stats */}
-        <div className="flex justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <Coins className="w-4 h-4 text-primary" />
-            <span className="text-muted-foreground">Einsatz:</span>
-            <span className="font-bold text-primary">{BET_AMOUNT}</span>
-          </div>
-          {lastWin > 0 && (
+        {lastWin > 0 && (
+          <div className="flex justify-center">
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-accent animate-pulse-slow" />
               <span className="text-muted-foreground">Gewinn:</span>
               <span className="font-bold text-accent">+{lastWin}</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Spin Button */}
         <Button
           className="w-full h-14 text-lg bg-gradient-to-r from-primary to-accent hover:opacity-90 glow-effect"
           onClick={spin}
-          disabled={spinning || balance < BET_AMOUNT}
+          disabled={spinning || balance < selectedBet}
         >
           <RotateCw className={`w-5 h-5 mr-2 ${spinning ? "animate-spin" : ""}`} />
           {spinning ? "Dreht..." : "SPIN"}
         </Button>
 
-        {balance < BET_AMOUNT && (
+        {balance < selectedBet && (
           <p className="text-center text-sm text-destructive">
             Nicht genug Guthaben. Holen Sie sich Ihren Tagesbonus!
           </p>
