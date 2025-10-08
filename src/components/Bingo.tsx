@@ -19,6 +19,7 @@ const Bingo = ({ balance, onBalanceChange }: BingoProps) => {
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameState, setGameState] = useState<"betting" | "playing" | "won">("betting");
   const [autoPlay, setAutoPlay] = useState(false);
+  const [speed, setSpeed] = useState(1); // 1x, 2x, 3x, 4x
 
   const generateBingoCard = () => {
     const card: number[][] = [];
@@ -64,12 +65,13 @@ const Bingo = ({ balance, onBalanceChange }: BingoProps) => {
 
   useEffect(() => {
     if (autoPlay && gameState === "playing") {
+      const baseSpeed = 1500;
       const interval = setInterval(() => {
         callNumber();
-      }, 1500);
+      }, baseSpeed / speed);
       return () => clearInterval(interval);
     }
-  }, [autoPlay, gameState, calledNumbers]);
+  }, [autoPlay, gameState, calledNumbers, speed]);
 
   const callNumber = () => {
     const allNumbers = Array.from({ length: 75 }, (_, i) => i + 1);
@@ -182,15 +184,31 @@ const Bingo = ({ balance, onBalanceChange }: BingoProps) => {
           </div>
         )}
 
-        {/* Stats */}
+        {/* Stats & Speed Control */}
         {gameState === "playing" && (
-          <div className="flex justify-between">
-            <Badge variant="outline">
-              Gezogen: {calledNumbers.length}/75
-            </Badge>
-            <Badge variant="outline">
-              Letzte 5: {calledNumbers.slice(-5).join(", ")}
-            </Badge>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <Badge variant="outline">
+                Gezogen: {calledNumbers.length}/75
+              </Badge>
+              <Badge variant="outline">
+                Letzte 5: {calledNumbers.slice(-5).join(", ")}
+              </Badge>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <span className="text-sm text-muted-foreground self-center">Geschwindigkeit:</span>
+              {[1, 2, 3, 4].map((s) => (
+                <Button
+                  key={s}
+                  size="sm"
+                  variant={speed === s ? "default" : "outline"}
+                  onClick={() => setSpeed(s)}
+                  className="w-12"
+                >
+                  {s}x
+                </Button>
+              ))}
+            </div>
           </div>
         )}
 
