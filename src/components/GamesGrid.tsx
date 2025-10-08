@@ -42,11 +42,25 @@ const GamesGrid = ({ onGameSelect }: GamesGridProps) => {
       id: "bingo"
     },
     {
-      title: "Mega Jackpot",
-      category: "Slots",
-      image: "https://images.unsplash.com/photo-1579547621113-e4bb2a19bdd6?w=400&h=300&fit=crop",
-      isLocked: true,
-      id: "jackpot"
+      title: "Crash",
+      category: "Sonstiges",
+      image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop",
+      isLocked: false,
+      id: "crash"
+    },
+    {
+      title: "Dice",
+      category: "Sonstiges",
+      image: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&h=300&fit=crop",
+      isLocked: false,
+      id: "dice"
+    },
+    {
+      title: "Plinko",
+      category: "Sonstiges",
+      image: "https://images.unsplash.com/photo-1541534401786-2077b5ab8c03?w=400&h=300&fit=crop",
+      isLocked: false,
+      id: "plinko"
     }
   ];
 

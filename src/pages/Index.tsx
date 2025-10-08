@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CasinoHeader from "@/components/CasinoHeader";
 import HeroSection from "@/components/HeroSection";
 import GamesGrid from "@/components/GamesGrid";
@@ -7,16 +8,65 @@ import Roulette from "@/components/Roulette";
 import Blackjack from "@/components/Blackjack";
 import VideoPoker from "@/components/VideoPoker";
 import Bingo from "@/components/Bingo";
+import Crash from "@/components/Crash";
+import Dice from "@/components/Dice";
+import Plinko from "@/components/Plinko";
+import Leaderboard from "@/components/Leaderboard";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 const DAILY_BONUS = 1000;
 
 const Index = () => {
-  const [balance, setBalance] = useState(1000);
+  const navigate = useNavigate();
+  const { user, loading, signOut } = useAuth();
+  const [balance, setBalance] = useState(10000);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [lastBonusDate, setLastBonusDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  // Update leaderboard when game is played
+  useEffect(() => {
+    if (!user) return;
+
+    const updateLeaderboard = async () => {
+      try {
+        const { data: leaderboardData } = await supabase
+          .from('leaderboard')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (leaderboardData) {
+          const totalWinnings = balance - 10000;
+          const biggestWin = Math.max(leaderboardData.biggest_win, totalWinnings);
+          
+          await supabase
+            .from('leaderboard')
+            .update({
+              total_winnings: Math.max(0, totalWinnings),
+              biggest_win: biggestWin,
+            })
+            .eq('user_id', user.id);
+        }
+      } catch (error) {
+        console.error('Error updating leaderboard:', error);
+      }
+    };
+
+    // Only update when not in a game
+    if (!selectedGame) {
+      updateLeaderboard();
+    }
+  }, [balance, user, selectedGame]);
 
   const claimDailyBonus = () => {
     const today = new Date().toDateString();
@@ -39,6 +89,18 @@ const Index = () => {
     setSelectedGame(null);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Lädt...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-card to-background">
       <CasinoHeader balance={balance} />
@@ -58,11 +120,30 @@ const Index = () => {
           {selectedGame === "blackjack" && <Blackjack balance={balance} onBalanceChange={setBalance} />}
           {selectedGame === "poker" && <VideoPoker balance={balance} onBalanceChange={setBalance} />}
           {selectedGame === "bingo" && <Bingo balance={balance} onBalanceChange={setBalance} />}
+          {selectedGame === "crash" && <Crash balance={balance} onBalanceChange={setBalance} onBack={handleBackToLobby} />}
+          {selectedGame === "dice" && <Dice balance={balance} onBalanceChange={setBalance} onBack={handleBackToLobby} />}
+          {selectedGame === "plinko" && <Plinko balance={balance} onBalanceChange={setBalance} onBack={handleBackToLobby} />}
         </div>
       ) : (
         <>
+          <div className="container mx-auto px-4 py-4 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => signOut()}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Abmelden
+            </Button>
+          </div>
           <HeroSection />
-          <GamesGrid onGameSelect={handleGameSelect} />
+          
+          <div className="container mx-auto px-4 py-8">
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <GamesGrid onGameSelect={handleGameSelect} />
+              </div>
+              <div>
+                <Leaderboard />
+              </div>
+            </div>
+          </div>
 
           <section className="py-16 bg-card/50">
             <div className="container mx-auto px-4 text-center">
