@@ -1,4 +1,12 @@
 import GameCard from "./GameCard";
+import slotMachineImg from "@/assets/slot-machine.jpg";
+import rouletteImg from "@/assets/roulette.jpg";
+import blackjackImg from "@/assets/blackjack.jpg";
+import videoPokerImg from "@/assets/video-poker.jpg";
+import bingoImg from "@/assets/bingo.jpg";
+import crashImg from "@/assets/crash.jpg";
+import diceImg from "@/assets/dice.jpg";
+import plinkoImg from "@/assets/plinko.jpg";
 
 interface GamesGridProps {
   onGameSelect: (game: string) => void;
@@ -9,56 +17,56 @@ const GamesGrid = ({ onGameSelect }: GamesGridProps) => {
     {
       title: "Slot Machine",
       category: "Slots",
-      image: "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=400&h=300&fit=crop",
+      image: slotMachineImg,
       isLocked: false,
       id: "slots"
     },
     {
       title: "Roulette",
       category: "Tischspiele",
-      image: "https://images.unsplash.com/photo-1518491945-d3c96a3e7e37?w=400&h=300&fit=crop",
+      image: rouletteImg,
       isLocked: false,
       id: "roulette"
     },
     {
       title: "Blackjack",
       category: "Kartenspiele",
-      image: "https://images.unsplash.com/photo-1561043433-aaf687c4cf04?w=400&h=300&fit=crop",
+      image: blackjackImg,
       isLocked: false,
       id: "blackjack"
     },
     {
       title: "Video Poker",
       category: "Kartenspiele",
-      image: "https://images.unsplash.com/photo-1560421683-6856ea585c78?w=400&h=300&fit=crop",
+      image: videoPokerImg,
       isLocked: false,
       id: "poker"
     },
     {
       title: "Bingo",
       category: "Sonstiges",
-      image: "https://images.unsplash.com/photo-1558008258-3256797b43f3?w=400&h=300&fit=crop",
+      image: bingoImg,
       isLocked: false,
       id: "bingo"
     },
     {
       title: "Crash",
       category: "Sonstiges",
-      image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop",
+      image: crashImg,
       isLocked: false,
       id: "crash"
     },
     {
       title: "Dice",
       category: "Sonstiges",
-      image: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&h=300&fit=crop",
+      image: diceImg,
       isLocked: false,
       id: "dice"
     },
     {
       title: "Plinko",
       category: "Sonstiges",
-      image: "https://images.unsplash.com/photo-1541534401786-2077b5ab8c03?w=400&h=300&fit=crop",
+      image: plinkoImg,
       isLocked: false,
       id: "plinko"
     }

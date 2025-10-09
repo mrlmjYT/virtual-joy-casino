@@ -12,6 +12,7 @@ import Crash from "@/components/Crash";
 import Dice from "@/components/Dice";
 import Plinko from "@/components/Plinko";
 import Leaderboard from "@/components/Leaderboard";
+import AdModal from "@/components/AdModal";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,9 @@ const Index = () => {
   const [balance, setBalance] = useState(10000);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [lastBonusDate, setLastBonusDate] = useState<string | null>(null);
+  const [roundsPlayed, setRoundsPlayed] = useState(0);
+  const [showAd, setShowAd] = useState(false);
+  const [pendingGame, setPendingGame] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -81,8 +85,26 @@ const Index = () => {
   };
 
   const handleGameSelect = (game: string) => {
-    setSelectedGame(game);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const newRoundsPlayed = roundsPlayed + 1;
+    setRoundsPlayed(newRoundsPlayed);
+    
+    // Show ad every 2 rounds
+    if (newRoundsPlayed % 2 === 0) {
+      setPendingGame(game);
+      setShowAd(true);
+    } else {
+      setSelectedGame(game);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleAdClose = () => {
+    setShowAd(false);
+    if (pendingGame) {
+      setSelectedGame(pendingGame);
+      setPendingGame(null);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const handleBackToLobby = () => {
@@ -103,6 +125,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-card to-background">
+      <AdModal isOpen={showAd} onClose={handleAdClose} />
       <CasinoHeader balance={balance} />
 
       {selectedGame ? (
