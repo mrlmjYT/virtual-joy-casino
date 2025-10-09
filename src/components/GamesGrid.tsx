@@ -69,6 +69,13 @@ const GamesGrid = ({ onGameSelect }: GamesGridProps) => {
       image: plinkoImg,
       isLocked: false,
       id: "plinko"
+    },
+    {
+      title: "Box Opening",
+      category: "Spezial",
+      image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=400&h=300&fit=crop",
+      isLocked: false,
+      id: "boxes"
     }
   ];
 

@@ -21,10 +21,14 @@ import { toast } from "sonner";
 
 const DAILY_BONUS = 1000;
 
-const Index = () => {
+interface IndexProps {
+  balance: number;
+  onBalanceChange: (newBalance: number) => void;
+}
+
+const Index = ({ balance, onBalanceChange }: IndexProps) => {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
-  const [balance, setBalance] = useState(10000);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [lastBonusDate, setLastBonusDate] = useState<string | null>(null);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
@@ -79,12 +83,18 @@ const Index = () => {
       return;
     }
 
-    setBalance(balance + DAILY_BONUS);
+    onBalanceChange(balance + DAILY_BONUS);
     setLastBonusDate(today);
     toast.success(`🎁 +${DAILY_BONUS} Chips erhalten!`);
   };
 
   const handleGameSelect = (game: string) => {
+    // Navigate to boxes page directly
+    if (game === "boxes") {
+      navigate('/boxes');
+      return;
+    }
+    
     const newRoundsPlayed = roundsPlayed + 1;
     setRoundsPlayed(newRoundsPlayed);
     
@@ -138,14 +148,14 @@ const Index = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Zurück zur Lobby
           </Button>
-          {selectedGame === "slots" && <SlotMachine balance={balance} onBalanceChange={setBalance} />}
-          {selectedGame === "roulette" && <Roulette balance={balance} onBalanceChange={setBalance} />}
-          {selectedGame === "blackjack" && <Blackjack balance={balance} onBalanceChange={setBalance} />}
-          {selectedGame === "poker" && <VideoPoker balance={balance} onBalanceChange={setBalance} />}
-          {selectedGame === "bingo" && <Bingo balance={balance} onBalanceChange={setBalance} />}
-          {selectedGame === "crash" && <Crash balance={balance} onBalanceChange={setBalance} onBack={handleBackToLobby} />}
-          {selectedGame === "dice" && <Dice balance={balance} onBalanceChange={setBalance} onBack={handleBackToLobby} />}
-          {selectedGame === "plinko" && <Plinko balance={balance} onBalanceChange={setBalance} onBack={handleBackToLobby} />}
+          {selectedGame === "slots" && <SlotMachine balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "roulette" && <Roulette balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "blackjack" && <Blackjack balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "poker" && <VideoPoker balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "bingo" && <Bingo balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "crash" && <Crash balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
+          {selectedGame === "dice" && <Dice balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
+          {selectedGame === "plinko" && <Plinko balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
         </div>
       ) : (
         <>
