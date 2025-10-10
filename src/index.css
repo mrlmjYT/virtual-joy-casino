@@ -94,4 +94,13 @@ All colors MUST be HSL.
   .animate-spin-slow {
     animation: spin 3s linear infinite;
   }
+
+  @keyframes spin-wheel {
+    0% {
+      transform: translateX(-50%) translateY(-50%);
+    }
+    100% {
+      transform: translateX(calc(-50% - var(--final-position))) translateY(-50%);
+    }
+  }
 }

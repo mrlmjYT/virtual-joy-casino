@@ -61,6 +61,8 @@ const BoxOpening = ({ balance, onBalanceChange }: BoxOpeningProps) => {
   const [opening, setOpening] = useState(false);
   const [lastWin, setLastWin] = useState<Item | null>(null);
   const [selectedBox, setSelectedBox] = useState<typeof boxes[0] | null>(null);
+  const [spinningItems, setSpinningItems] = useState<Item[]>([]);
+  const [finalItemIndex, setFinalItemIndex] = useState<number>(0);
 
   const getRandomItem = (items: Item[]): Item => {
     const random = Math.random();
@@ -87,9 +89,22 @@ const BoxOpening = ({ balance, onBalanceChange }: BoxOpeningProps) => {
     setSelectedBox(box);
     onBalanceChange(balance - box.price);
 
+    // Create spinning animation with random items
+    const wonItem = getRandomItem(box.items);
+    const spinItems: Item[] = [];
+    
+    // Add 20 random items for the spin
+    for (let i = 0; i < 20; i++) {
+      spinItems.push(box.items[Math.floor(Math.random() * box.items.length)]);
+    }
+    // Place the won item at a specific position (around 75% through)
+    spinItems[15] = wonItem;
+    
+    setSpinningItems(spinItems);
+    setFinalItemIndex(15);
+
     // Simulate opening animation
     setTimeout(() => {
-      const wonItem = getRandomItem(box.items);
       const profit = wonItem.value - box.price;
       
       setLastWin(wonItem);
@@ -104,7 +119,8 @@ const BoxOpening = ({ balance, onBalanceChange }: BoxOpeningProps) => {
       }
       
       setOpening(false);
-    }, 2500);
+      setSpinningItems([]);
+    }, 3500);
   };
 
   return (
@@ -114,7 +130,37 @@ const BoxOpening = ({ balance, onBalanceChange }: BoxOpeningProps) => {
         <p className="text-muted-foreground">Kaufen und öffnen Sie Boxen für die Chance auf große Gewinne!</p>
       </div>
 
-      {lastWin && (
+      {opening && spinningItems.length > 0 && (
+        <Card className="bg-muted/50 overflow-hidden">
+          <CardContent className="p-6">
+            <div className="relative h-32 overflow-hidden">
+              <div className="absolute top-1/2 left-1/2 w-1 h-full bg-primary z-10 -translate-x-1/2 -translate-y-1/2" />
+              <div 
+                className="flex gap-4 absolute left-1/2 top-1/2 -translate-y-1/2"
+                style={{
+                  animation: "spin-wheel 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards",
+                  transform: `translateX(calc(-50% - ${finalItemIndex * 120}px)) translateY(-50%)`
+                }}
+              >
+                {spinningItems.map((item, index) => {
+                  const ItemIcon = item.icon;
+                  return (
+                    <div 
+                      key={index} 
+                      className={`${item.color} min-w-[100px] h-24 rounded-lg flex flex-col items-center justify-center text-white p-2`}
+                    >
+                      <ItemIcon className="w-8 h-8 mb-1" />
+                      <p className="text-xs font-bold text-center">{item.name}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {lastWin && !opening && (
         <Card className={`${lastWin.rarity === "jackpot" ? "bg-yellow-500/20 border-yellow-500 animate-pulse" : "bg-primary/10 border-primary"}`}>
           <CardContent className="p-6 text-center">
             <div className={`${lastWin.color} w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-3`}>
