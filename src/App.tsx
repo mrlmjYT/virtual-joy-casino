@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Boxes from "./pages/Boxes";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -73,6 +74,7 @@ const App = () => {
             <Route path="/" element={<Index balance={balance} onBalanceChange={handleBalanceChange} />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/boxes" element={<Boxes balance={balance} onBalanceChange={handleBalanceChange} />} />
+            <Route path="/profile" element={<Profile balance={balance} onBalanceChange={handleBalanceChange} />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,12 +1,21 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, Gift, Shield } from "lucide-react";
+import { Sparkles, Gift, Shield, AlertTriangle } from "lucide-react";
 
 const HeroSection = () => {
   return (
     <section className="relative overflow-hidden py-20 bg-gradient-to-b from-card to-background">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
       
-      <div className="container mx-auto px-4 relative z-10">
+      {/* Animated Warning Banner */}
+      <div className="absolute top-0 left-0 right-0 bg-accent/90 text-accent-foreground py-2 z-50">
+        <div className="flex items-center justify-center gap-3 animate-pulse">
+          <AlertTriangle className="w-5 h-5" />
+          <p className="font-bold text-sm">KEIN ECHTGELD - NUR SPIELGELD - KEINE ECHTEN GEWINNE MÖGLICH</p>
+          <AlertTriangle className="w-5 h-5" />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10 pt-12">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-4 py-2 mb-6">
             <Sparkles className="w-4 h-4 text-primary animate-pulse-slow" />

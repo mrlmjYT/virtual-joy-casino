@@ -167,6 +167,23 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
           </div>
           <HeroSection />
           
+          {/* Big Disclaimer Banner */}
+          <div className="bg-gradient-to-r from-accent/20 via-accent/30 to-accent/20 border-y-4 border-accent py-6 animate-pulse-slow">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <div className="bg-accent text-accent-foreground px-6 py-3 rounded-full font-bold text-lg animate-bounce">
+                  ⚠️ KEIN ECHTGELD
+                </div>
+                <p className="text-center font-bold text-xl">
+                  100% SPIELGELD • KEINE ECHTEN GEWINNE • NUR UNTERHALTUNG
+                </p>
+                <div className="bg-accent text-accent-foreground px-6 py-3 rounded-full font-bold text-lg animate-bounce">
+                  ⚠️ KEIN ECHTGELD
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div className="container mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
@@ -201,11 +218,35 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
         </>
       )}
 
-      <footer className="bg-card border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p className="text-sm">
-            © 2025 VirtualCasino • 100% Spielgeld • Keine Echtgeldwetten • Nur für Unterhaltung
-          </p>
+      <footer className="bg-card border-t-4 border-accent py-12">
+        <div className="container mx-auto px-4">
+          <div className="bg-accent/10 border-2 border-accent rounded-lg p-8 mb-6">
+            <h3 className="text-2xl font-bold text-center text-accent mb-4">
+              🚨 WICHTIGER HINWEIS - KEIN ECHTGELD! 🚨
+            </h3>
+            <p className="text-center text-lg font-medium mb-4">
+              Diese Plattform verwendet ausschließlich virtuelles Spielgeld ohne jeglichen Geldwert.
+            </p>
+            <div className="grid md:grid-cols-3 gap-4 text-center">
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="font-bold text-accent">❌ Keine Einzahlungen</p>
+                <p className="text-sm text-muted-foreground">Kein echtes Geld nötig</p>
+              </div>
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="font-bold text-accent">❌ Keine Auszahlungen</p>
+                <p className="text-sm text-muted-foreground">Keine echten Gewinne möglich</p>
+              </div>
+              <div className="bg-card p-4 rounded-lg border border-border">
+                <p className="font-bold text-accent">✅ Nur Unterhaltung</p>
+                <p className="text-sm text-muted-foreground">100% risikofrei spielen</p>
+              </div>
+            </div>
+          </div>
+          <div className="text-center text-muted-foreground">
+            <p className="text-sm">
+              © 2025 VirtualCasino • 100% Spielgeld • Keine Echtgeldwetten • Nur für Unterhaltung
+            </p>
+          </div>
         </div>
       </footer>
     </div>

@@ -1,11 +1,14 @@
 import { Coins, Trophy, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface CasinoHeaderProps {
   balance: number;
 }
 
 const CasinoHeader = ({ balance }: CasinoHeaderProps) => {
+  const navigate = useNavigate();
+
   return (
     <header className="bg-card border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-card/80">
       <div className="container mx-auto px-4 py-4">
@@ -28,11 +31,21 @@ const CasinoHeader = ({ balance }: CasinoHeaderProps) => {
               </div>
             </div>
 
-            <Button variant="outline" size="icon" className="rounded-full">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full hover:scale-110 transition-transform"
+              onClick={() => navigate('/')}
+            >
               <Trophy className="w-5 h-5" />
             </Button>
 
-            <Button variant="outline" size="icon" className="rounded-full">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full hover:scale-110 transition-transform"
+              onClick={() => navigate('/profile')}
+            >
               <User className="w-5 h-5" />
             </Button>
           </div>
