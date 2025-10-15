@@ -11,10 +11,15 @@ import Bingo from "@/components/Bingo";
 import Crash from "@/components/Crash";
 import Dice from "@/components/Dice";
 import Plinko from "@/components/Plinko";
+import Keno from "@/components/Keno";
+import WheelOfFortune from "@/components/WheelOfFortune";
+import SicBo from "@/components/SicBo";
+import MinesGame from "@/components/MinesGame";
 import Leaderboard from "@/components/Leaderboard";
 import AdModal from "@/components/AdModal";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { toast } from "sonner";
@@ -34,12 +39,60 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
   const [roundsPlayed, setRoundsPlayed] = useState(0);
   const [showAd, setShowAd] = useState(false);
   const [pendingGame, setPendingGame] = useState<string | null>(null);
+  const [userLevel, setUserLevel] = useState(1);
+  const [userExperience, setUserExperience] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  // Load user level
+  useEffect(() => {
+    if (user) {
+      loadUserLevel();
+    }
+  }, [user]);
+
+  const loadUserLevel = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('level, experience')
+      .eq('id', user.id)
+      .single();
+
+    if (data) {
+      setUserLevel(data.level || 1);
+      setUserExperience(data.experience || 0);
+    }
+  };
+
+  const updateLevelAndExperience = async (experienceGained: number) => {
+    if (!user) return;
+
+    const newExperience = userExperience + experienceGained;
+    const experienceForNextLevel = userLevel * 100;
+    let newLevel = userLevel;
+
+    if (newExperience >= experienceForNextLevel) {
+      newLevel = userLevel + 1;
+      toast.success(`🎉 Level Up! Du bist jetzt Level ${newLevel}!`);
+    }
+
+    setUserExperience(newExperience);
+    setUserLevel(newLevel);
+
+    await supabase
+      .from('profiles')
+      .update({ 
+        level: newLevel,
+        experience: newExperience 
+      })
+      .eq('id', user.id);
+  };
 
   // Update leaderboard when game is played
   useEffect(() => {
@@ -97,6 +150,9 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
     
     const newRoundsPlayed = roundsPlayed + 1;
     setRoundsPlayed(newRoundsPlayed);
+    
+    // Award experience for playing
+    updateLevelAndExperience(10);
     
     // Show ad every 2 rounds
     if (newRoundsPlayed % 2 === 0) {
@@ -156,6 +212,10 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
           {selectedGame === "crash" && <Crash balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
           {selectedGame === "dice" && <Dice balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
           {selectedGame === "plinko" && <Plinko balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
+          {selectedGame === "keno" && <Keno balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "wheel" && <WheelOfFortune balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "sicbo" && <SicBo balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "mines" && <MinesGame balance={balance} onBalanceChange={onBalanceChange} />}
         </div>
       ) : (
         <>
@@ -185,9 +245,32 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
           </div>
           
           <div className="container mx-auto px-4 py-8">
+            {/* Level Progress Bar */}
+            <div className="mb-8 max-w-4xl mx-auto">
+              <Card className="border-2 border-primary/30 bg-card/50 backdrop-blur">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-lg font-bold">Level {userLevel}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {userExperience} / {userLevel * 100} XP
+                    </span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-4 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-primary to-secondary h-full transition-all duration-500 animate-pulse-slow"
+                      style={{ width: `${(userExperience / (userLevel * 100)) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Spiele Spiele um Erfahrung zu sammeln und neue Spiele freizuschalten!
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <GamesGrid onGameSelect={handleGameSelect} />
+                <GamesGrid onGameSelect={handleGameSelect} userLevel={userLevel} />
               </div>
               <div>
                 <Leaderboard />

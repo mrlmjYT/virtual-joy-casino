@@ -10,71 +10,100 @@ import plinkoImg from "@/assets/plinko.jpg";
 
 interface GamesGridProps {
   onGameSelect: (game: string) => void;
+  userLevel: number;
 }
 
-const GamesGrid = ({ onGameSelect }: GamesGridProps) => {
+const GamesGrid = ({ onGameSelect, userLevel }: GamesGridProps) => {
   const games = [
     {
       title: "Slot Machine",
       category: "Slots",
       image: slotMachineImg,
-      isLocked: false,
+      requiredLevel: 1,
       id: "slots"
+    },
+    {
+      title: "Dice",
+      category: "Würfelspiele",
+      image: diceImg,
+      requiredLevel: 1,
+      id: "dice"
     },
     {
       title: "Roulette",
       category: "Tischspiele",
       image: rouletteImg,
-      isLocked: false,
+      requiredLevel: 2,
       id: "roulette"
+    },
+    {
+      title: "Crash",
+      category: "Multiplier",
+      image: crashImg,
+      requiredLevel: 2,
+      id: "crash"
     },
     {
       title: "Blackjack",
       category: "Kartenspiele",
       image: blackjackImg,
-      isLocked: false,
+      requiredLevel: 3,
       id: "blackjack"
+    },
+    {
+      title: "Plinko",
+      category: "Arcade",
+      image: plinkoImg,
+      requiredLevel: 3,
+      id: "plinko"
     },
     {
       title: "Video Poker",
       category: "Kartenspiele",
       image: videoPokerImg,
-      isLocked: false,
+      requiredLevel: 4,
       id: "poker"
     },
     {
       title: "Bingo",
-      category: "Sonstiges",
+      category: "Klassiker",
       image: bingoImg,
-      isLocked: false,
+      requiredLevel: 4,
       id: "bingo"
     },
     {
-      title: "Crash",
-      category: "Sonstiges",
-      image: crashImg,
-      isLocked: false,
-      id: "crash"
+      title: "Keno",
+      category: "Lotterie",
+      image: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&h=300&fit=crop",
+      requiredLevel: 5,
+      id: "keno"
     },
     {
-      title: "Dice",
-      category: "Sonstiges",
-      image: diceImg,
-      isLocked: false,
-      id: "dice"
+      title: "Glücksrad",
+      category: "Wheel Games",
+      image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop",
+      requiredLevel: 6,
+      id: "wheel"
     },
     {
-      title: "Plinko",
-      category: "Sonstiges",
-      image: plinkoImg,
-      isLocked: false,
-      id: "plinko"
+      title: "Sic Bo",
+      category: "Würfelspiele",
+      image: "https://images.unsplash.com/photo-1551431009-a802eeec77b1?w=400&h=300&fit=crop",
+      requiredLevel: 7,
+      id: "sicbo"
+    },
+    {
+      title: "Mines",
+      category: "Strategy",
+      image: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=400&h=300&fit=crop",
+      requiredLevel: 8,
+      id: "mines"
     },
     {
       title: "Box Opening",
       category: "Spezial",
       image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=400&h=300&fit=crop",
-      isLocked: false,
+      requiredLevel: 5,
       id: "boxes"
     }
   ];
@@ -90,16 +119,19 @@ const GamesGrid = ({ onGameSelect }: GamesGridProps) => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {games.map((game) => (
-            <GameCard
-              key={game.id}
-              title={game.title}
-              category={game.category}
-              image={game.image}
-              isLocked={game.isLocked}
-              onPlay={() => !game.isLocked && onGameSelect(game.id)}
-            />
-          ))}
+          {games.map((game) => {
+            const isLocked = userLevel < game.requiredLevel;
+            return (
+              <GameCard
+                key={game.id}
+                title={game.title}
+                category={`${game.category} ${isLocked ? `• Level ${game.requiredLevel}` : ""}`}
+                image={game.image}
+                isLocked={isLocked}
+                onPlay={() => !isLocked && onGameSelect(game.id)}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
