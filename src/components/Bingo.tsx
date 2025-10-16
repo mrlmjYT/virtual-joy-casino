@@ -105,6 +105,9 @@ const Bingo = ({ balance, onBalanceChange }: BingoProps) => {
   };
 
   const checkWin = () => {
+    // Reduced win chance - only check for complete patterns after more numbers
+    if (calledNumbers.length < 25) return; // Need at least 25 numbers called
+
     // Check rows
     for (let row = 0; row < 5; row++) {
       if (marked.every(col => col[row])) {

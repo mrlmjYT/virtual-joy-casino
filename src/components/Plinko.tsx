@@ -62,44 +62,65 @@ const Plinko = ({ balance, onBalanceChange, onBack }: PlinkoProps) => {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Plinko Board */}
-          <div className="bg-gradient-to-br from-muted to-background rounded-lg border-2 border-border p-6">
-            <div className="relative h-64 flex items-center justify-center">
+          <div className="bg-gradient-to-br from-secondary/30 via-secondary/10 to-background rounded-xl border-2 border-primary/20 p-8 shadow-2xl relative overflow-hidden">
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-primary/10 pointer-events-none"></div>
+            
+            <div className="relative h-80 flex items-center justify-center">
               {playing ? (
                 <div className="text-center">
-                  <div className="animate-bounce text-6xl">🔴</div>
-                  <p className="text-muted-foreground mt-4">Ball fällt...</p>
+                  <div className="relative">
+                    <div className="animate-bounce text-7xl drop-shadow-2xl filter">
+                      🔴
+                    </div>
+                    <div className="absolute inset-0 blur-xl bg-red-500/30 rounded-full animate-pulse"></div>
+                  </div>
+                  <p className="text-muted-foreground mt-6 font-medium animate-pulse">Ball fällt...</p>
                 </div>
               ) : result !== null ? (
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-gradient-gold mb-4">
-                    {multipliers[result]}x
+                <div className="text-center animate-scale-in">
+                  <div className="relative inline-block mb-6">
+                    <div className="text-6xl font-black text-gradient-gold drop-shadow-lg">
+                      {multipliers[result]}x
+                    </div>
+                    <div className="absolute inset-0 blur-2xl bg-primary/40 animate-pulse"></div>
                   </div>
-                  <p className={`text-xl font-bold ${
-                    multipliers[result] >= 1 ? "text-green-500" : "text-yellow-500"
+                  <p className={`text-2xl font-bold drop-shadow-md ${
+                    multipliers[result] >= 1 ? "text-green-400" : "text-yellow-400"
                   }`}>
                     {multipliers[result] >= 1 
-                      ? `Gewonnen! +${Math.floor(betAmount * multipliers[result]).toLocaleString()}`
+                      ? `🎉 Gewonnen! +${Math.floor(betAmount * multipliers[result]).toLocaleString()}`
                       : `+${Math.floor(betAmount * multipliers[result]).toLocaleString()}`
                     }
                   </p>
                 </div>
               ) : (
-                <p className="text-muted-foreground">Lassen Sie den Ball fallen!</p>
+                <div className="text-center">
+                  <p className="text-lg text-muted-foreground mb-4">🎯 Bereit?</p>
+                  <p className="text-sm text-muted-foreground/70">Lassen Sie den Ball fallen!</p>
+                </div>
               )}
             </div>
 
             {/* Multiplier Display */}
-            <div className="grid grid-cols-16 gap-1 mt-4">
+            <div className="grid grid-cols-16 gap-1 mt-6 relative">
               {multipliers.map((mult, index) => (
                 <div
                   key={index}
-                  className={`text-center p-1 rounded text-xs font-bold ${
-                    result === index ? "bg-primary text-primary-foreground" : "bg-muted"
+                  className={`relative text-center p-2 rounded-lg text-xs font-bold transition-all duration-300 ${
+                    result === index 
+                      ? "bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/50 ring-2 ring-primary animate-pulse" 
+                      : "bg-gradient-to-b from-muted to-muted/50 hover:scale-105"
                   } ${
-                    mult >= 4 ? "text-green-500" : mult >= 1 ? "text-yellow-500" : "text-red-500"
+                    mult >= 4 
+                      ? "text-green-400 font-extrabold" 
+                      : mult >= 1 
+                      ? "text-yellow-400 font-bold" 
+                      : "text-red-400"
                   }`}
                 >
                   {mult}x
+                  {mult >= 4 && <div className="absolute -top-1 -right-1 text-xs">💎</div>}
                 </div>
               ))}
             </div>

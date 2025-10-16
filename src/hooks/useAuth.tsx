@@ -103,6 +103,15 @@ export const useAuth = () => {
     }
   };
 
+  const signInAsGuest = () => {
+    // Guest mode - no actual authentication
+    toast({
+      title: "Gast-Modus aktiviert",
+      description: "⚠️ Hinweis: Dein Fortschritt wird nicht gespeichert!",
+    });
+    return { error: null };
+  };
+
   return {
     user,
     session,
@@ -110,5 +119,6 @@ export const useAuth = () => {
     signUp,
     signIn,
     signOut,
+    signInAsGuest,
   };
 };

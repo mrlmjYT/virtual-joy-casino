@@ -15,7 +15,7 @@ const usernameSchema = z.string().min(3, { message: "Benutzername muss mindesten
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, signInAsGuest, user } = useAuth();
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -28,6 +28,11 @@ const Auth = () => {
     navigate('/');
     return null;
   }
+
+  const handleGuestLogin = () => {
+    signInAsGuest();
+    navigate('/');
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,6 +192,26 @@ const Auth = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Guest Login Button */}
+        <div className="mt-4">
+          <Card className="bg-muted/50 border-dashed">
+            <CardContent className="pt-6">
+              <div className="text-center space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  ⚠️ Als Gast spielen (Fortschritt wird nicht gespeichert)
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGuestLogin}
+                >
+                  Als Gast fortfahren
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

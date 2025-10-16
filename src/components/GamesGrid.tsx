@@ -100,6 +100,13 @@ const GamesGrid = ({ onGameSelect, userLevel }: GamesGridProps) => {
       id: "mines"
     },
     {
+      title: "Quiz Gamble",
+      category: "Wissen",
+      image: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=400&h=300&fit=crop",
+      requiredLevel: 4,
+      id: "quiz"
+    },
+    {
       title: "Box Opening",
       category: "Spezial",
       image: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=400&h=300&fit=crop",

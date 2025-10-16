@@ -15,6 +15,7 @@ import Keno from "@/components/Keno";
 import WheelOfFortune from "@/components/WheelOfFortune";
 import SicBo from "@/components/SicBo";
 import MinesGame from "@/components/MinesGame";
+import QuizGamble from "@/components/QuizGamble";
 import Leaderboard from "@/components/Leaderboard";
 import AdModal from "@/components/AdModal";
 import { useAuth } from "@/hooks/useAuth";

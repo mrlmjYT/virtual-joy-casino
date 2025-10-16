@@ -53,6 +53,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           balance: number
+          coins: number
           created_at: string
           experience: number
           id: string
@@ -62,6 +63,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           balance?: number
+          coins?: number
           created_at?: string
           experience?: number
           id: string
@@ -71,6 +73,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           balance?: number
+          coins?: number
           created_at?: string
           experience?: number
           id?: string
@@ -78,6 +81,75 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      }
+      shop_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          item_type: string
+          name: string
+          preview_data: Json | null
+          price: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          item_type: string
+          name: string
+          preview_data?: Json | null
+          price: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          item_type?: string
+          name?: string
+          preview_data?: Json | null
+          price?: number
+        }
+        Relationships: []
+      }
+      user_items: {
+        Row: {
+          id: string
+          is_equipped: boolean | null
+          item_id: string
+          purchased_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_equipped?: boolean | null
+          item_id: string
+          purchased_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_equipped?: boolean | null
+          item_id?: string
+          purchased_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
