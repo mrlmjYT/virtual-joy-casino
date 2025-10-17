@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trophy, TrendingUp, Target, Coins, Calendar, Award, Zap, Shield } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { formatNumber } from "@/lib/formatNumber";
 
 interface ProfileProps {
   balance: number;
@@ -132,7 +133,7 @@ const Profile = ({ balance }: ProfileProps) => {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-primary">{balance.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-primary">{formatNumber(balance)}</p>
                 <p className="text-xs text-muted-foreground mt-1">Spielgeld-Chips</p>
               </CardContent>
             </Card>
@@ -158,7 +159,7 @@ const Profile = ({ balance }: ProfileProps) => {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-accent">{stats.biggestWin.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-accent">{formatNumber(stats.biggestWin)}</p>
                 <p className="text-xs text-muted-foreground mt-1">Beste Runde</p>
               </CardContent>
             </Card>
@@ -171,7 +172,7 @@ const Profile = ({ balance }: ProfileProps) => {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-primary">{stats.totalWinnings.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-primary">{formatNumber(stats.totalWinnings)}</p>
                 <p className="text-xs text-muted-foreground mt-1">Lifetime Winnings</p>
               </CardContent>
             </Card>
@@ -196,7 +197,7 @@ const Profile = ({ balance }: ProfileProps) => {
                     <span className="text-sm font-medium">Durchschn. Gewinn/Spiel</span>
                     <span className="text-lg font-bold text-secondary">
                       {stats.gamesPlayed > 0 
-                        ? Math.floor(stats.totalWinnings / stats.gamesPlayed).toLocaleString()
+                        ? formatNumber(Math.floor(stats.totalWinnings / stats.gamesPlayed))
                         : 0}
                     </span>
                   </div>

@@ -103,13 +103,24 @@ export const useAuth = () => {
     }
   };
 
-  const signInAsGuest = () => {
-    // Guest mode - no actual authentication
-    toast({
-      title: "Gast-Modus aktiviert",
-      description: "⚠️ Hinweis: Dein Fortschritt wird nicht gespeichert!",
-    });
-    return { error: null };
+  const signInAsGuest = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (error) throw error;
+      
+      toast({
+        title: "Gast-Modus aktiviert",
+        description: "⚠️ Ihr Fortschritt wird nicht gespeichert",
+      });
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Fehler",
+        description: error.message,
+        variant: "destructive",
+      });
+      return { error };
+    }
   };
 
   return {

@@ -42,6 +42,7 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
   const [pendingGame, setPendingGame] = useState<string | null>(null);
   const [userLevel, setUserLevel] = useState(1);
   const [userExperience, setUserExperience] = useState(0);
+  const [previousBalance, setPreviousBalance] = useState(balance);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -94,6 +95,18 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
       })
       .eq('id', user.id);
   };
+
+  // Award XP based on coins spent
+  useEffect(() => {
+    if (balance < previousBalance && user) {
+      const coinsSpent = previousBalance - balance;
+      const xpGained = Math.floor(coinsSpent / 10); // 1 XP per 10 coins spent
+      if (xpGained > 0) {
+        updateLevelAndExperience(xpGained);
+      }
+    }
+    setPreviousBalance(balance);
+  }, [balance]);
 
   // Update leaderboard when game is played
   useEffect(() => {
@@ -151,9 +164,6 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
     
     const newRoundsPlayed = roundsPlayed + 1;
     setRoundsPlayed(newRoundsPlayed);
-    
-    // Award experience for playing
-    updateLevelAndExperience(10);
     
     // Show ad every 2 rounds
     if (newRoundsPlayed % 2 === 0) {
@@ -217,6 +227,7 @@ const Index = ({ balance, onBalanceChange }: IndexProps) => {
           {selectedGame === "wheel" && <WheelOfFortune balance={balance} onBalanceChange={onBalanceChange} />}
           {selectedGame === "sicbo" && <SicBo balance={balance} onBalanceChange={onBalanceChange} />}
           {selectedGame === "mines" && <MinesGame balance={balance} onBalanceChange={onBalanceChange} />}
+          {selectedGame === "quiz" && <QuizGamble balance={balance} onBalanceChange={onBalanceChange} onBack={handleBackToLobby} />}
         </div>
       ) : (
         <>
