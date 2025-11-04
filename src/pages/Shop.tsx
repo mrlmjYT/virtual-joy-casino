@@ -37,29 +37,39 @@ const Shop = ({ balance, onBalanceChange }: ShopProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
+    // Always load shop data. If not logged in, show items read-only
     loadShopData();
   }, [user]);
 
   const loadShopData = async () => {
-    if (!user) return;
-
     try {
-      // Load user profile to get coins
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("coins")
-        .eq("id", user.id)
-        .single();
+      // Load user profile to get coins (if logged in)
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("coins")
+          .eq("id", user.id)
+          .single();
 
-      if (profile) {
-        setCoins(profile.coins);
+        if (profile) {
+          setCoins(profile.coins);
+        }
+
+        // Load user's purchased items
+        const { data: purchased } = await supabase
+          .from("user_items")
+          .select("item_id, is_equipped")
+          .eq("user_id", user.id);
+
+        if (purchased) {
+          setUserItems(purchased);
+        }
+      } else {
+        setCoins(0);
+        setUserItems([]);
       }
 
-      // Load all shop items
+      // Load all shop items (public)
       const { data: items } = await supabase
         .from("shop_items")
         .select("*")
@@ -67,16 +77,6 @@ const Shop = ({ balance, onBalanceChange }: ShopProps) => {
 
       if (items) {
         setShopItems(items);
-      }
-
-      // Load user's purchased items
-      const { data: purchased } = await supabase
-        .from("user_items")
-        .select("item_id, is_equipped")
-        .eq("user_id", user.id);
-
-      if (purchased) {
-        setUserItems(purchased);
       }
     } catch (error) {
       console.error("Error loading shop:", error);
@@ -94,7 +94,11 @@ const Shop = ({ balance, onBalanceChange }: ShopProps) => {
   };
 
   const handlePurchase = async (item: ShopItem) => {
-    if (!user) return;
+    if (!user) {
+      toast.error("Bitte melden Sie sich an, um Items zu kaufen.");
+      navigate("/auth");
+      return;
+    }
 
     if (coins < item.price) {
       toast.error("Nicht genug Coins!");
@@ -133,7 +137,11 @@ const Shop = ({ balance, onBalanceChange }: ShopProps) => {
   };
 
   const handleEquip = async (itemId: string) => {
-    if (!user) return;
+    if (!user) {
+      toast.error("Bitte melden Sie sich an, um Items auszurüsten.");
+      navigate("/auth");
+      return;
+    }
 
     try {
       // Unequip all items of same type first
