@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      game_history: {
+        Row: {
+          balance_after: number
+          balance_before: number
+          bet_amount: number
+          created_at: string | null
+          game_data: Json | null
+          game_type: string
+          id: string
+          user_id: string
+          win_amount: number
+        }
+        Insert: {
+          balance_after: number
+          balance_before: number
+          bet_amount: number
+          created_at?: string | null
+          game_data?: Json | null
+          game_type: string
+          id?: string
+          user_id: string
+          win_amount: number
+        }
+        Update: {
+          balance_after?: number
+          balance_before?: number
+          bet_amount?: number
+          created_at?: string | null
+          game_data?: Json | null
+          game_type?: string
+          id?: string
+          user_id?: string
+          win_amount?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leaderboard: {
         Row: {
           biggest_win: number
@@ -45,6 +96,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leaderboard_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -149,11 +207,38 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

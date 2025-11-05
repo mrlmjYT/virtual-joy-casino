@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RotateCw, Sparkles, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import BetSelector from "./BetSelector";
+import { supabase } from "@/integrations/supabase/client";
 
 // Assets
 import cherry from "@/assets/slots/cherry.png";
@@ -135,24 +136,55 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
     }, 400);
   };
 
-  const finishSpin = (totalSpecials: number) => {
-    setSpinning(false);
+  const finishSpin = async (totalSpecials: number) => {
     let winAmount = 0;
     if (totalSpecials > 0) {
       const multiplier = SPECIAL_PAYOUT[totalSpecials] ?? 0;
       winAmount = selectedBet * multiplier;
-      if (totalSpecials === 6) {
-        toast.success("💎 ULTRA JACKPOT! 6x Diamant!", { duration: 4000 });
-      } else {
-        toast.success(`Diamanten gesammelt: ${totalSpecials}/6`);
-      }
-    } else {
-      toast.info("Kein Diamant – viel Glück beim nächsten Spin!");
     }
 
-    if (winAmount > 0) {
-      setLastWin(winAmount);
-      onBalanceChange(balance - selectedBet + winAmount);
+    // Send to server for validation
+    try {
+      const { data, error } = await supabase.functions.invoke('play-slots', {
+        body: {
+          betAmount: selectedBet,
+          symbols: slots,
+          specialCount: totalSpecials,
+          winAmount: winAmount,
+        },
+      });
+
+      if (error) {
+        console.error('Server validation error:', error);
+        toast.error('Failed to process spin. Please try again.');
+        setSpinning(false);
+        return;
+      }
+
+      if (!data?.success) {
+        toast.error(data?.error || 'Spin failed');
+        setSpinning(false);
+        return;
+      }
+
+      // Update balance with server-validated value
+      onBalanceChange(data.balance);
+      
+      if (winAmount > 0) {
+        setLastWin(winAmount);
+        if (totalSpecials === 6) {
+          toast.success("💎 ULTRA JACKPOT! 6x Diamant!", { duration: 4000 });
+        } else {
+          toast.success(`Diamanten gesammelt: ${totalSpecials}/6`);
+        }
+      } else {
+        toast.info("Kein Diamant – viel Glück beim nächsten Spin!");
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error('An error occurred. Please try again.');
+    } finally {
+      setSpinning(false);
     }
   };
 
@@ -163,8 +195,7 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
       return;
     }
 
-    // Deduct bet once
-    onBalanceChange(balance - selectedBet);
+    // Don't deduct bet here - server will handle it
     setSpinning(true);
     setLastWin(0);
     setSpecialCount(0);
