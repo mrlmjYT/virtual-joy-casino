@@ -59,8 +59,12 @@ const pickRandomSymbol = (excludeSpecialChance = false): SymbolKey => {
 const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
   const [selectedBet, setSelectedBet] = useState(10);
   const [slots, setSlots] = useState<SymbolKey[]>(Array(6).fill("cherry" as SymbolKey));
+  const [reelSymbols, setReelSymbols] = useState<SymbolKey[][]>(
+    Array(6).fill(null).map(() => Array(5).fill("cherry" as SymbolKey))
+  );
   const [locked, setLocked] = useState<boolean[]>(Array(6).fill(false));
   const [spinning, setSpinning] = useState(false);
+  const [spinningReels, setSpinningReels] = useState<boolean[]>(Array(6).fill(false));
   const [lastWin, setLastWin] = useState(0);
   const [specialCount, setSpecialCount] = useState(0);
   const spinTimeout = useRef<number | null>(null);
@@ -69,23 +73,45 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
     if (spinTimeout.current) window.clearTimeout(spinTimeout.current);
   }, []);
 
+  const generateReelSymbols = (locked: boolean, currentSymbol?: SymbolKey): SymbolKey[] => {
+    if (locked && currentSymbol) {
+      return Array(5).fill(currentSymbol);
+    }
+    return Array(5).fill(null).map(() => pickRandomSymbol());
+  };
+
   const spinOnce = (currentLocked: boolean[], prevSlots?: SymbolKey[]) => {
-    // Only respin unlocked positions
-    const newSlots = (prevSlots ?? slots).map((sym, i) => (currentLocked[i] ? sym : pickRandomSymbol()));
-    setSlots(newSlots);
+    // Generate symbols for each reel (5 symbols per reel)
+    const newReelSymbols = (prevSlots ?? slots).map((sym, i) => 
+      generateReelSymbols(currentLocked[i], sym)
+    );
+    setReelSymbols(newReelSymbols);
+    
+    // Animate spinning reels
+    const reelsToSpin = currentLocked.map(l => !l);
+    setSpinningReels(reelsToSpin);
+    
+    // After animation, determine middle symbol (position 2) as result
+    setTimeout(() => {
+      const newSlots = newReelSymbols.map(reel => reel[2]); // Middle position
+      setSlots(newSlots);
+      setSpinningReels(Array(6).fill(false));
 
-    // Lock newly landed specials
-    const updatedLocked = [...currentLocked];
-    let newSpecials = 0;
-    newSlots.forEach((k, i) => {
-      if (k === "diamond" && !updatedLocked[i]) {
-        updatedLocked[i] = true;
-        newSpecials++;
-      }
-    });
-    setLocked(updatedLocked);
+      // Lock newly landed specials
+      const updatedLocked = [...currentLocked];
+      let newSpecials = 0;
+      newSlots.forEach((k, i) => {
+        if (k === "diamond" && !updatedLocked[i]) {
+          updatedLocked[i] = true;
+          newSpecials++;
+        }
+      });
+      setLocked(updatedLocked);
 
-    return { newSlots, updatedLocked, newSpecials };
+      return { newSlots, updatedLocked, newSpecials };
+    }, 800);
+
+    return { newSlots: prevSlots ?? slots, updatedLocked: currentLocked, newSpecials: 0 };
   };
 
   const resolveRespins = (currentLocked: boolean[], currentSlots: SymbolKey[], currentCount: number) => {
@@ -164,24 +190,52 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
         <CardTitle className="text-center text-2xl text-gradient-gold">Slots: Diamond Respin</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Reels - 3x2 grid */}
+        {/* Reels - 6 vertical columns with 5 visible symbols each */}
         <div className="bg-secondary/20 rounded-lg p-4 border-2 border-secondary/50">
-          <div className="grid grid-cols-3 gap-3">
-            {symbolData.map((sym, i) => (
+          <div className="flex gap-2 justify-center">
+            {reelSymbols.map((reel, reelIndex) => (
               <div
-                key={i}
-                className={`aspect-square bg-background rounded-lg flex items-center justify-center border-2 border-border relative overflow-hidden ${
-                  spinning ? "animate-scale-in" : ""
-                } ${locked[i] ? "ring-2 ring-accent shadow-lg" : ""}`}
+                key={reelIndex}
+                className={`relative bg-background rounded-lg border-2 overflow-hidden ${
+                  locked[reelIndex] ? "border-accent ring-2 ring-accent shadow-lg" : "border-border"
+                }`}
+                style={{ width: "60px", height: "300px" }}
               >
-                <img
-                  src={sym.src}
-                  alt={sym.alt}
-                  loading="lazy"
-                  className={`w-5/6 h-5/6 object-contain ${locked[i] ? "pulse" : ""}`}
-                />
-                {locked[i] && (
-                  <div className="absolute bottom-1 right-1 text-xs bg-accent/20 text-foreground px-2 py-0.5 rounded-md">
+                {/* Scrolling symbols container */}
+                <div
+                  className={`absolute inset-0 flex flex-col transition-transform ${
+                    spinningReels[reelIndex] ? "animate-slot-spin" : ""
+                  }`}
+                >
+                  {reel.map((symbolKey, symbolIndex) => {
+                    const sym = SYMBOLS.find((s) => s.key === symbolKey)!;
+                    return (
+                      <div
+                        key={`${reelIndex}-${symbolIndex}`}
+                        className="flex items-center justify-center"
+                        style={{ height: "60px" }}
+                      >
+                        <img
+                          src={sym.src}
+                          alt={sym.alt}
+                          loading="lazy"
+                          className={`w-10 h-10 object-contain ${
+                            locked[reelIndex] && symbolIndex === 2 ? "animate-pulse" : ""
+                          }`}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Middle position indicator */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div className="w-full h-[60px] border-y-2 border-primary/30" />
+                </div>
+
+                {/* Lock indicator */}
+                {locked[reelIndex] && (
+                  <div className="absolute top-1 right-1 text-xs bg-accent/90 text-accent-foreground px-1.5 py-0.5 rounded-md font-bold">
                     LOCK
                   </div>
                 )}
@@ -191,8 +245,10 @@ const SlotMachine = ({ balance, onBalanceChange }: SlotMachineProps) => {
 
           {/* Special progress */}
           <div className="mt-4 flex items-center justify-center gap-2">
-            <img src={diamond} alt="Diamant" className="w-5 h-5" />
-            <span className="text-sm text-muted-foreground">Spezial: {specialCount}/6</span>
+            <img src={diamond} alt="Diamant" className="w-6 h-6" />
+            <span className="text-sm text-muted-foreground font-bold">
+              Diamanten: {specialCount}/6
+            </span>
           </div>
         </div>
 
